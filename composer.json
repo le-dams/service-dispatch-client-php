@@ -1,5 +1,5 @@
 {
-  "name": "bourcy/service-dispatch-client-php",
+  "name": "le-dams/service-dispatch-client-php",
   "description": "Client of ServiceDispatch",
   "type": "library",
   "keywords": [
