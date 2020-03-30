@@ -1,0 +1,12 @@
+#eclipse
+.project
+
+#phpstorm
+.idea
+
+#composer
+composer.phar
+composer.lock
+vendor
+
+phpunit.xml

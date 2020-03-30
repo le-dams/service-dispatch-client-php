@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<phpunit
+        bootstrap="./tests/bootstrap.php">
+    <testsuite name="Service Dispatch Client Test-Suite">
+        <directory>./tests</directory>
+    </testsuite>
+    <filter>
+        <whitelist addUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./src</directory>
+        </whitelist>
+    </filter>
+    <php>
+        <env name="SD_BASE_URI" value="http://service-dispatch.local/"/>
+        <env name="SD_USERNAME" value="123456"/>
+        <env name="SD_SECRET" value="123456"/>
+    </php>
+</phpunit>
