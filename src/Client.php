@@ -72,10 +72,11 @@ class Client
      * @param string $action
      * @param array|null $payload
      * @param string|null $externalId
+     * @param string|null $callbackUrl
      * @return array|null
      * @throws \Exception
      */
-    public function sendAsync(string $method, string $type, string $action, array $payload = null, string $externalId = null): ?array
+    public function sendAsync(string $method, string $type, string $action, array $payload = null, string $externalId = null, string $callbackUrl = null): ?array
     {
         return $this->request($method, '/v'.self::VERSION.'/create', [
             'parallel' => true,
@@ -84,6 +85,7 @@ class Client
             'external_id' => $externalId,
             'action' => $action,
             'payload' => $payload,
+            'callback_url' => $callbackUrl,
         ]);
     }
 
