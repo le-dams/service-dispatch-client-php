@@ -112,6 +112,24 @@ class Client
     }
 
     /**
+     * @param Request $request
+     * @return array|null
+     * @throws \Exception
+     */
+    public function sendRequest(Request $request): ?array
+    {
+        return $this->request($request->getMethod(),'/v'.self::VERSION.'/create', [
+            'parallel' => $request->isParallel(),
+            'async' =>  $request->isParallel(),
+            'type' => $request->getType(),
+            'external_id' => $request->getExternalId(),
+            'action' => $request->getAction(),
+            'payload' => $request->getPayload(),
+            'service' => $request->getService()
+        ]);
+    }
+
+    /**
      * @return bool
      * @throws \Exception
      */
