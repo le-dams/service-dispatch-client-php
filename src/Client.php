@@ -48,22 +48,16 @@ class Client
 
     public function __construct(string $baseUri, string $userName = null, string $secretKey = null, bool $debug = false, LoggerInterface $logger = null)
     {
-        $this->baseUri = $baseUri;
         $this->userName = $userName;
         $this->secretKey = $secretKey;
         $this->debug = $debug;
         $this->logger = new NullLogger();
+        $this->client = new \GuzzleHttp\Client([
+            'base_uri' => $baseUri.(substr($baseUri, -1)!=='/' ? '/' : null),
+        ]);
         if ($logger instanceof LoggerInterface) {
             $this->logger = $logger;
         }
-        $this->init();
-    }
-
-    private function init(): void
-    {
-        $this->client = new \GuzzleHttp\Client([
-            'base_uri' => $this->baseUri,
-        ]);
     }
 
     /**
