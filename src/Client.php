@@ -72,7 +72,7 @@ class Client
      */
     public function sendAsync(string $method, string $type, string $action, array $payload = null, string $externalId = null, string $callbackUrl = null): ?array
     {
-        return $this->request($method, '/v'.self::VERSION.'/create', [
+        return $this->request($method, 'v'.self::VERSION.'/create', [
             'parallel' => true,
             'async' =>  true,
             'type' => $type,
@@ -95,7 +95,7 @@ class Client
      */
     public function sendSync(string $method, string $type, string $action, array $payload = null, string $externalId = null, bool $parallel = false): ?array
     {
-        return $this->request($method,'/v'.self::VERSION.'/create', [
+        return $this->request($method,'v'.self::VERSION.'/create', [
             'parallel' => $parallel,
             'async' =>  false,
             'type' => $type,
@@ -112,7 +112,7 @@ class Client
      */
     public function sendRequest(Request $request): ?array
     {
-        return $this->request($request->getMethod(),'/v'.self::VERSION.'/create', [
+        return $this->request($request->getMethod(),'v'.self::VERSION.'/create', [
             'parallel' => $request->isParallel(),
             'async' =>  $request->isParallel(),
             'type' => $request->getType(),
@@ -130,7 +130,7 @@ class Client
     public function ping(): bool
     {
         try {
-            $this->request(self::METHOD_GET, '/');
+            $this->request(self::METHOD_GET, '');
             return true;
         } catch(\Exception $e) {
             return false;
@@ -143,7 +143,7 @@ class Client
      */
     public function transactions(): ?array
     {
-        return $this->request(self::METHOD_GET, '/transactions');
+        return $this->request(self::METHOD_GET, 'transactions');
     }
 
     /**
@@ -155,9 +155,9 @@ class Client
     public function transaction(string $transactionId, bool $externalId = false): ?array
     {
         if ($externalId === true) {
-            return $this->request(self::METHOD_GET, '/transaction?external_id='.urlencode($externalId));
+            return $this->request(self::METHOD_GET, 'transaction?external_id='.urlencode($externalId));
         } else {
-            return $this->request(self::METHOD_GET, '/transaction/'.urlencode($transactionId));
+            return $this->request(self::METHOD_GET, 'transaction/'.urlencode($transactionId));
         }
     }
 
