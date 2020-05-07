@@ -9,7 +9,7 @@ use Psr\Log\NullLogger;
 
 class Client
 {
-    const VERSION = '1.0.8';
+    const VERSION = '1.0.9';
 
     const METHOD_GET = 'GET';
     const METHOD_POST = 'POST';
@@ -134,10 +134,10 @@ class Client
                 if (isset($itemArray['content_type']) && is_string($itemArray['content_type'])) {
                     $item->setContentType($itemArray['content_type']);
                 }
-                if (isset($response['response']) && is_string($itemArray['response'])) {
+                if (isset($itemArray['response']) && is_string($itemArray['response'])) {
                     $item->setResponse($itemArray['response']);
                 }
-                if (isset($response['transaction_item_id']) && is_string($itemArray['transaction_item_id'])) {
+                if (isset($itemArray['transaction_item_id']) && is_string($itemArray['transaction_item_id'])) {
                     $item->setTransactionItemId($itemArray['transaction_item_id']);
                 }
                 $items[] = $item;
