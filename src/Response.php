@@ -2,7 +2,7 @@
 
 namespace Bourcy\Service\Dispatch\Client;
 
-class Response
+class Response implements \Countable
 {
     /**
      * @var string|null
@@ -10,29 +10,20 @@ class Response
     private $transactionId;
 
     /**
-     * @var string|null
+     * @var ResponseItem[]
      */
-    private $transactionItemId;
+    private $items = [];
 
-    /**
-     * @var bool|null
-     */
-    private $success;
+    public function __construct(string $transactionId, array $items = [])
+    {
+        $this->transactionId = $transactionId;
+        $this->items = $items;
+    }
 
-    /**
-     * @var int|null
-     */
-    private $statusCode;
-
-    /**
-     * @var string|null
-     */
-    private $contentType;
-
-    /**
-     * @var string|null
-     */
-    private $response;
+    public function count()
+    {
+        return count($this->items);
+    }
 
     /**
      * @return string|null
@@ -43,90 +34,51 @@ class Response
     }
 
     /**
-     * @param string|null $transactionId
+     * @return ResponseItem[]
      */
-    public function setTransactionId(?string $transactionId): void
+    public function getItems(): array
     {
-        $this->transactionId = $transactionId;
+        return $this->items;
     }
 
     /**
-     * @return string|null
+     * @return ResponseItem[]
      */
-    public function getTransactionItemId(): ?string
+    public function getSuccessItems(): array
     {
-        return $this->transactionItemId;
+        return array_filter($this->getItems(), function (ResponseItem $item) {
+           return $item->isSuccess() === true;
+        });
     }
 
     /**
-     * @param string|null $transactionItemId
+     * @return ResponseItem[]
      */
-    public function setTransactionItemId(?string $transactionItemId): void
+    public function getFailedItems(): array
     {
-        $this->transactionItemId = $transactionItemId;
+        return array_filter($this->getItems(), function (ResponseItem $item) {
+            return $item->isSuccess() === false;
+        });
     }
 
     /**
-     * @return bool|null
+     * @return ResponseItem[]
      */
-    public function getSuccess(): ?bool
+    public function getNoResponseItems(): array
     {
-        return $this->success;
+        return array_filter($this->getItems(), function (ResponseItem $item) {
+            return $item->isSuccess() === null;
+        });
     }
 
     /**
-     * @param bool|null $success
+     * @param string $service
+     * @return ResponseItem[]
      */
-    public function setSuccess(?bool $success): void
+    public function findItemsByService(string $service): array
     {
-        $this->success = $success;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getStatusCode(): ?int
-    {
-        return $this->statusCode;
-    }
-
-    /**
-     * @param int|null $statusCode
-     */
-    public function setStatusCode(?int $statusCode): void
-    {
-        $this->statusCode = $statusCode;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getContentType(): ?string
-    {
-        return $this->contentType;
-    }
-
-    /**
-     * @param string|null $contentType
-     */
-    public function setContentType(?string $contentType): void
-    {
-        $this->contentType = $contentType;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getResponse(): ?string
-    {
-        return $this->response;
-    }
-
-    /**
-     * @param string|null $response
-     */
-    public function setResponse(?string $response): void
-    {
-        $this->response = $response;
+        return array_filter($this->getItems(), function (ResponseItem $item) use ($service) {
+            return strtolower($item->getService()) === strtolower($service);
+        });
     }
 }

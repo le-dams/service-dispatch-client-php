@@ -130,6 +130,9 @@ class Client
         if (isset($responseArray['status_code']) && is_int($responseArray['status_code'])) {
             $response->setStatusCode($responseArray['status_code']);
         }
+        if (isset($responseArray['service']) && is_string($responseArray['service'])) {
+            $response->setService($responseArray['service']);
+        }
         if (isset($responseArray['content_type']) && is_string($responseArray['content_type'])) {
             $response->setContentType($responseArray['content_type']);
         }
@@ -206,6 +209,7 @@ class Client
 
             $headers = [
                 'Content-Type' => 'application/json',
+                'Dispatch-Client-Version' => '1.0.7',
                 'Authorization' => 'Basic ' . base64_encode($this->userName . ':' . $this->secretKey),
             ];
 
