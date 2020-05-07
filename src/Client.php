@@ -9,18 +9,13 @@ use Psr\Log\NullLogger;
 
 class Client
 {
-    const VERSION = '0.1';
+    const VERSION = '1.0.8';
 
     const METHOD_GET = 'GET';
     const METHOD_POST = 'POST';
     const METHOD_PUT = 'PUT';
     const METHOD_DELETE = 'DELETE';
     const METHOD_PATCH = 'PATCH';
-
-    /**
-     * @var string
-     */
-    private $baseUri;
 
     /**
      * @var string|null
@@ -123,29 +118,32 @@ class Client
             'service' => $request->getService(),
             'callback_url' => $request->getCallbackUrl()
         ]);
-        $response = new Response();
-        if (isset($responseArray['success']) && is_bool($responseArray['success'])) {
-            $response->setSuccess($responseArray['status_code']);
+        $items = [];
+        if (isset($responseArray['items']) && is_array($responseArray['items'])) {
+            foreach ($responseArray['items'] as $itemArray) {
+                $item = new ResponseItem();
+                if (isset($itemArray['success']) && is_bool($itemArray['success'])) {
+                    $item->setSuccess($itemArray['success']);
+                }
+                if (isset($itemArray['status_code']) && is_int($itemArray['status_code'])) {
+                    $item->setStatusCode($itemArray['status_code']);
+                }
+                if (isset($itemArray['service']) && is_string($itemArray['service'])) {
+                    $item->setService($itemArray['service']);
+                }
+                if (isset($itemArray['content_type']) && is_string($itemArray['content_type'])) {
+                    $item->setContentType($itemArray['content_type']);
+                }
+                if (isset($response['response']) && is_string($itemArray['response'])) {
+                    $item->setResponse($itemArray['response']);
+                }
+                if (isset($response['transaction_item_id']) && is_string($itemArray['transaction_item_id'])) {
+                    $item->setTransactionItemId($itemArray['transaction_item_id']);
+                }
+                $items[] = $item;
+            }
         }
-        if (isset($responseArray['status_code']) && is_int($responseArray['status_code'])) {
-            $response->setStatusCode($responseArray['status_code']);
-        }
-        if (isset($responseArray['service']) && is_string($responseArray['service'])) {
-            $response->setService($responseArray['service']);
-        }
-        if (isset($responseArray['content_type']) && is_string($responseArray['content_type'])) {
-            $response->setContentType($responseArray['content_type']);
-        }
-        if (isset($response['response']) && is_string($responseArray['response'])) {
-            $response->setResponse($responseArray['response']);
-        }
-        if (isset($response['transaction_id']) && is_string($responseArray['transaction_id'])) {
-            $response->setTransactionId($responseArray['transaction_id']);
-        }
-        if (isset($response['transaction_item_id']) && is_string($responseArray['transaction_item_id'])) {
-            $response->setTransactionItemId($responseArray['transaction_item_id']);
-        }
-        return $response;
+        return new Response($responseArray['transaction_id'], $items);
     }
 
     /**
@@ -209,7 +207,7 @@ class Client
 
             $headers = [
                 'Content-Type' => 'application/json',
-                'Dispatch-Client-Version' => '1.0.7',
+                'Dispatch-Client-Version' => self::VERSION,
                 'Authorization' => 'Basic ' . base64_encode($this->userName . ':' . $this->secretKey),
             ];
 
