@@ -15,6 +15,7 @@ class Client
     const METHOD_POST = 'POST';
     const METHOD_PUT = 'PUT';
     const METHOD_DELETE = 'DELETE';
+    const METHOD_PATCH = 'PATCH';
 
     /**
      * @var string
@@ -107,14 +108,14 @@ class Client
 
     /**
      * @param Request $request
-     * @return array|null
+     * @return Response
      * @throws \Exception
      */
-    public function sendRequest(Request $request): ?array
+    public function sendRequest(Request $request): Response
     {
-        return $this->request($request->getMethod(),'v'.self::VERSION.'/create', [
+        $responseArray = $this->request($request->getMethod(),'v'.self::VERSION.'/create', [
             'parallel' => $request->isParallel(),
-            'async' =>  $request->isParallel(),
+            'async' =>  $request->isAsync(),
             'type' => $request->getType(),
             'external_id' => $request->getExternalId(),
             'action' => $request->getAction(),
@@ -122,6 +123,26 @@ class Client
             'service' => $request->getService(),
             'callback_url' => $request->getCallbackUrl()
         ]);
+        $response = new Response();
+        if (isset($responseArray['success']) && is_bool($responseArray['success'])) {
+            $response->setSuccess($responseArray['status_code']);
+        }
+        if (isset($responseArray['status_code']) && is_int($responseArray['status_code'])) {
+            $response->setStatusCode($responseArray['status_code']);
+        }
+        if (isset($responseArray['content_type']) && is_string($responseArray['content_type'])) {
+            $response->setContentType($responseArray['content_type']);
+        }
+        if (isset($response['response']) && is_string($responseArray['response'])) {
+            $response->setResponse($responseArray['response']);
+        }
+        if (isset($response['transaction_id']) && is_string($responseArray['transaction_id'])) {
+            $response->setTransactionId($responseArray['transaction_id']);
+        }
+        if (isset($response['transaction_item_id']) && is_string($responseArray['transaction_item_id'])) {
+            $response->setTransactionItemId($responseArray['transaction_item_id']);
+        }
+        return $response;
     }
 
     /**
@@ -176,6 +197,7 @@ class Client
                 case self::METHOD_GET:
                 case self::METHOD_POST:
                 case self::METHOD_PUT:
+                case self::METHOD_PATCH:
                 case self::METHOD_DELETE:
                     break;
                 default:
