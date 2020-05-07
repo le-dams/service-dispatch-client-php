@@ -45,6 +45,11 @@ class Request
     private $parallel = false;
 
     /**
+     * @var string|null
+     */
+    private $callbackUrl = null;
+
+    /**
      * @return string
      */
     public function getMethod(): string
@@ -170,5 +175,21 @@ class Request
     public function setParallel(bool $parallel): void
     {
         $this->parallel = $parallel;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCallbackUrl(): ?string
+    {
+        return $this->callbackUrl;
+    }
+
+    /**
+     * @param string|null $callbackUrl
+     */
+    public function setCallbackUrl(?string $callbackUrl): void
+    {
+        $this->callbackUrl = $callbackUrl;
     }
 }

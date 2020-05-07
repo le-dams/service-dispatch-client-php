@@ -119,7 +119,8 @@ class Client
             'external_id' => $request->getExternalId(),
             'action' => $request->getAction(),
             'payload' => $request->getPayload(),
-            'service' => $request->getService()
+            'service' => $request->getService(),
+            'callback_url' => $request->getCallbackUrl()
         ]);
     }
 
