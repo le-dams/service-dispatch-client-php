@@ -14,7 +14,7 @@ class Response implements \Countable
      */
     private $items = [];
 
-    public function __construct(string $transactionId, array $items = [])
+    public function __construct(?string $transactionId = null, array $items = [])
     {
         $this->transactionId = $transactionId;
         $this->items = $items;
