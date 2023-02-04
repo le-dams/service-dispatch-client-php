@@ -160,6 +160,7 @@ class Client
                         'response' => $response
                     ]);
                 }
+                return false;
             }
             return true;
         } catch(\Exception $e) {
