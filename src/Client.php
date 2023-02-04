@@ -149,10 +149,21 @@ class Client
         try {
             $response = $this->request(self::METHOD_GET, '');
             if (null === $response) {
+                if (true === $this->debug) {
+                    $this->logger->warning('[ping] Response empty');
+                }
                 return false;
             }
-            return array_key_exists('application', $response);
+            if (false === array_key_exists('application', $response)) {
+                if (true === $this->debug) {
+                    $this->logger->warning('[ping] Wrong response', [
+                        'response' => $response
+                    ]);
+                }
+            }
+            return true;
         } catch(\Exception $e) {
+            $this->logger->error($e);
             return false;
         }
     }
@@ -217,7 +228,7 @@ class Client
 
             if (true === $this->debug) {
                 $this->logger->debug('['.__METHOD__.'] ', [
-                    'params' => array_keys($params),
+                    'params' => is_array($params) ? array_keys($params) : null,
                     'headers' => $headers
                 ]);
             }
