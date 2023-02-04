@@ -148,6 +148,9 @@ class Client
     {
         try {
             $response = $this->request(self::METHOD_GET, '');
+            if (null === $response) {
+                return false;
+            }
             return array_key_exists('application', $response);
         } catch(\Exception $e) {
             return false;
