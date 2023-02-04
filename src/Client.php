@@ -9,7 +9,7 @@ use Psr\Log\NullLogger;
 
 class Client
 {
-    const VERSION = '1.0.9';
+    const VERSION = '2.0.0';
 
     const METHOD_GET = 'GET';
     const METHOD_POST = 'POST';
@@ -18,33 +18,27 @@ class Client
     const METHOD_PATCH = 'PATCH';
 
     /**
-     * @var string|null
+     * @var string
      */
-    private $userName;
-
-    /**
-     * @var string|null
-     */
-    private $secretKey;
+    private string $secretKey;
 
     /**
      * @var \GuzzleHttp\Client
      */
-    private $client;
+    private \GuzzleHttp\Client $client;
 
     /**
      * @var bool
      */
-    private $debug;
+    private bool $debug = false;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
-    public function __construct(string $baseUri, string $userName = null, string $secretKey = null, bool $debug = false, LoggerInterface $logger = null)
+    public function __construct(string $baseUri, string $secretKey = null, bool $debug = false, LoggerInterface $logger = null)
     {
-        $this->userName = $userName;
         $this->secretKey = $secretKey;
         $this->debug = $debug;
         $this->logger = new NullLogger();
@@ -153,8 +147,8 @@ class Client
     public function ping(): bool
     {
         try {
-            $this->request(self::METHOD_GET, '');
-            return true;
+            $response = $this->request(self::METHOD_GET, '');
+            return array_key_exists('application', $response);
         } catch(\Exception $e) {
             return false;
         }
@@ -208,7 +202,7 @@ class Client
             $headers = [
                 'Content-Type' => 'application/json',
                 'Dispatch-Client-Version' => self::VERSION,
-                'Authorization' => 'Basic ' . base64_encode($this->userName . ':' . $this->secretKey),
+                'Authorization' => 'Bearer ' . $this->secretKey,
             ];
 
             $request = [
@@ -218,17 +212,17 @@ class Client
 
             $request = $this->client->request($method, $url, $request);
 
-            if ($this->debug === true && $this->logger instanceof LoggerInterface) {
-                $this->logger->debug('['.__METHOD__.':headers] '.json_encode($headers));
-                $this->logger->debug('['.__METHOD__.':request] '.json_encode($headers));
+            if (true === $this->debug) {
+                $this->logger->debug('['.__METHOD__.'] ', [
+                    'params' => array_keys($params),
+                    'headers' => $headers
+                ]);
             }
 
             $contentJson = $request->getBody()->getContents();
-            return \json_decode($contentJson, JSON_OBJECT_AS_ARRAY);
+            return \json_decode($contentJson, true);
         } catch (GuzzleException $guzzleException) {
-            if ($this->debug === true && $this->logger instanceof LoggerInterface) {
-                $this->logger->error('['.__METHOD__.']['.get_class($guzzleException).'] '.$guzzleException->getMessage());
-            }
+            $this->logger->error($guzzleException);
             throw new ServiceDispatchException('Error with ServiceDispatch', -1, $guzzleException);
         }
     }
